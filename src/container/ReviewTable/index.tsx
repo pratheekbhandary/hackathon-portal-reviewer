@@ -136,12 +136,12 @@ class ReviewTable extends Component<Props, State> {
     );
   };
 
-  modalActivateButton = (ideaId:any) => {
+  modalActivateButton = (ideaId:string) => {
     return (
       <button
         type="button"
         className="btn btn-primary"
-        onClick={(ideaId)=>this.navigateToIdea(ideaId)}
+        onClick={(event)=>this.navigateToIdea(ideaId)}
       >
         Remarks
       </button>

@@ -28,7 +28,7 @@ private rangeRef:any;
 
   render() {
     return (
-      <div className="rating">
+      <div className="rating mb-5">
         <div className="value">{this.state.value}</div>
         <input
           ref={this.rangeRef}
