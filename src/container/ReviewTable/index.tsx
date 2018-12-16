@@ -3,10 +3,12 @@ import { RouteComponentProps } from "react-router";
 import { ReduxState } from "../../reducers/reduxState";
 import { Action, Dispatch, bindActionCreators } from "redux";
 import { connect } from "react-redux";
-import {selectIdea} from '../../actions/index';
-
+import { selectIdea } from "../../actions/index";
+import Header from "../header";
 interface Props extends RouteComponentProps {
-  selectIdea:Function;
+  selectIdea: Function;
+  authUser: string;
+  authName: string;
 }
 
 interface State {
@@ -29,7 +31,8 @@ const NOMINEE_DETAILS: Array<Nominee> = [
   {
     ideaId: "Idea0001",
     submittedDate: "19/12/2015",
-    description: "Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.",
+    description:
+      "Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.",
     framework: "framework1",
     nominationTitle: "Nom0001",
     ideaDocument: "../watever",
@@ -40,7 +43,8 @@ const NOMINEE_DETAILS: Array<Nominee> = [
   {
     ideaId: "Idea0001",
     submittedDate: "19/12/2015",
-    description: "Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.",
+    description:
+      "Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.",
     framework: "framework2",
     nominationTitle: "Nom0002",
     ideaDocument: "../watever",
@@ -51,7 +55,8 @@ const NOMINEE_DETAILS: Array<Nominee> = [
   {
     ideaId: "Idea0001",
     submittedDate: "19/12/2015",
-    description: "Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.",
+    description:
+      "Alerts are available for any length of text, as well as an optional dismiss button. For proper styling, use one of the eight required contextual classes (e.g., .alert-success). For inline dismissal, use the alerts jQuery plugin.",
     framework: "framework3",
     nominationTitle: "Nom0003",
     ideaDocument: "../watever",
@@ -86,7 +91,7 @@ const NOMINEE_DETAILS: Array<Nominee> = [
 class ReviewTable extends Component<Props, State> {
   constructor(props: Props) {
     super(props);
-    this.navigateToIdea=this.navigateToIdea.bind(this);
+    this.navigateToIdea = this.navigateToIdea.bind(this);
   }
 
   getTableHeader = () => {
@@ -136,12 +141,12 @@ class ReviewTable extends Component<Props, State> {
     );
   };
 
-  modalActivateButton = (ideaId:string) => {
+  modalActivateButton = (ideaId: string) => {
     return (
       <button
         type="button"
         className="btn btn-primary"
-        onClick={(event)=>this.navigateToIdea(ideaId)}
+        onClick={event => this.navigateToIdea(ideaId)}
       >
         Remarks
       </button>
@@ -156,31 +161,54 @@ class ReviewTable extends Component<Props, State> {
     );
   };
 
-  navigateToIdea(ideaId:any){
+  navigateToIdea(ideaId: any) {
     this.props.selectIdea(ideaId);
     this.props.history.push("/remarks");
   }
 
+  logoutForm() {
+    if (this.props.authUser) {
+      return (
+        <div>
+          <Header
+            authUser={this.props.authUser}
+            authName={this.props.authName}
+            history={this.props.history}
+          />
+        </div>
+      );
+    }
+  }
+
   render() {
     return (
-      <div className="ReactTable">
-        <h4>Reviewers Table</h4>
-        <div className="m-5 border">
-          <table className="table table-hover">
-            {this.getTableHeader()}
-            {this.generateBody(NOMINEE_DETAILS)}
-          </table>
+      <div>
+        {this.logoutForm()}
+        <div className="ReviewersTable">
+          <h4 className="d-flex justify-content-center mt-3">Reviewers Table</h4>
+          <div className="m-3 border">
+            <table className="table table-hover mb-0">
+              {this.getTableHeader()}
+              {this.generateBody(NOMINEE_DETAILS)}
+            </table>
+          </div>
         </div>
       </div>
     );
   }
 }
 
-function mapStateToProps(state:ReduxState){
-
+function mapStateToProps(state: ReduxState) {
+  return {
+    authUser: state.user.email,
+    authName: state.user.name
+  };
 }
 
-function mapDispatchToProps(dispatch:Dispatch<Action>){
-  return bindActionCreators({selectIdea},dispatch);
+function mapDispatchToProps(dispatch: Dispatch<Action>) {
+  return bindActionCreators({ selectIdea }, dispatch);
 }
-export default connect(mapStateToProps,mapDispatchToProps)(ReviewTable);
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ReviewTable);
