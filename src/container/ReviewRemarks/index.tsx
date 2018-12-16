@@ -10,6 +10,7 @@ import { Action, Dispatch, bindActionCreators } from "redux";
 import { throwError } from "../../actions/index";
 import { connect } from "react-redux";
 import { RouteComponentProps } from "react-router";
+import Header from '../header';
 
 interface Props extends RouteComponentProps{
   ideaId: string;
@@ -20,6 +21,8 @@ interface Props extends RouteComponentProps{
   nominationTitle: string;
   description: string;
   throwError: Function;
+  authUser: string;
+  authName: string;
 }
 
 interface State {
@@ -74,12 +77,23 @@ class ReviewRemarks extends Component<Props, State> {
   isEditable(el: any) {
     this.setState({ isReviewInProgress: el ? true : false });
   }
+  logoutForm() {
+    if (this.props.authUser) {
+      return (
+        <div>
+          <Header
+            authUser={this.props.authUser}
+            authName={this.props.authName}
+            history={this.props.history}
+          />
+        </div>
+      );
+    }
+  }
   render() {
     return (
       <div className="cover_page">
-        <header className="bg-primary text-white">
-          <h1 className="p-2">Header</h1>
-        </header>
+        {this.logoutForm()}
         <main className="container background">
           <ItemDetails
             ideaDocument=""
@@ -106,7 +120,9 @@ class ReviewRemarks extends Component<Props, State> {
 
 function mapStateToProps(state: ReduxState) {
   return {
-    ideaId: state.ideaInReview
+    ideaId: state.ideaInReview,
+    authUser: state.user.email,
+    authName: state.user.name
   };
 }
 
