@@ -8,7 +8,7 @@ interface Props {
 }
 export default (props: Props) => {
   return (
-    <div className="card text-white bg-info mb-3">
+    <div className="card text-white bg-info mb-3 mt-3">
       <div className="card-header">
         <h3 className="text-dark">Idea Details</h3>
       </div>
