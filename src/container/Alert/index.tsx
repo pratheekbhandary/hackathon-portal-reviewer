@@ -2,9 +2,13 @@ import React, { Component, Fragment } from "react";
 import { connect } from "react-redux";
 import { ReduxState } from "../../reducers/reduxState";
 import "./Alert.css";
+import { Dispatch, Action, bindActionCreators } from "redux";
+
+import {clearError} from "../../actions";
 
 interface Props {
   alert: { message: string; type: string };
+  clearError: Function;
 }
 
 class Alert extends Component<Props> {
@@ -15,30 +19,30 @@ class Alert extends Component<Props> {
   render() {
     return (
       <Fragment>
-        {this.props.alert.message === "SUCCESS" && (
-          <div className="myAlert-top alert alert-success">
+        {this.props.alert.type === "SUCCESS" && (
+          <div className="myAlert-top alert-success">
             <a
-              href="#"
-              className="close"
+              onClick={()=>this.props.clearError()}
+              className="close order-3"
               data-dismiss="alert"
               aria-label="close"
             >
               &times;
             </a>
-            <strong>Success!</strong> {this.props.alert.message}
+            <div className="d-flex justify-content-center flex-grow-1"><strong>Success!</strong>{this.props.alert.message}</div>
           </div>
         )}
-        {this.props.alert.message === "ERROR" && (
-          <div className="myAlert-bottom alert alert-danger">
+        {this.props.alert.type === "ERROR" && (
+          <div className="myAlert-bottom alert-danger">
             <a
-              href="#"
-              className="close"
+              onClick={()=>this.props.clearError()}
+              className="close order-3"
               data-dismiss="alert"
               aria-label="close"
             >
               &times;
             </a>
-            <strong>Danger!</strong> {this.props.alert.message}
+            <div className="d-flex justify-content-center flex-grow-1"><strong>Danger!</strong> {this.props.alert.message}</div>
           </div>
         )}
       </Fragment>
@@ -52,4 +56,8 @@ function mapStateToProps(state: ReduxState) {
   };
 }
 
-export default connect(mapStateToProps)(Alert);
+function mapDispatchToProps(dispatch:Dispatch<Action>){
+  return bindActionCreators({clearError},dispatch);
+}
+
+export default connect(mapStateToProps,mapDispatchToProps)(Alert);

@@ -1,4 +1,4 @@
-import React, { Component} from "react";
+import React, { Component } from "react";
 import Rating from "../../components/Rating";
 import ItemDetails from "../../components/IdeaDetails";
 import Card from "../../components/Card";
@@ -6,8 +6,12 @@ import "./ReviewRemarks.css";
 import Editable from "../Editable";
 import DecisionButtons from "../../components/DecisionButtons";
 import { ReduxState } from "../../reducers/reduxState";
+import { Action, Dispatch, bindActionCreators } from "redux";
+import { throwError } from "../../actions/index";
+import { connect } from "react-redux";
+import { RouteComponentProps } from "react-router";
 
-interface Props {
+interface Props extends RouteComponentProps{
   ideaId: string;
   ideaDocument: string;
   submittedDate: string;
@@ -15,6 +19,7 @@ interface Props {
   framework: string;
   nominationTitle: string;
   description: string;
+  throwError: Function;
 }
 
 interface State {
@@ -31,10 +36,10 @@ class ReviewRemarks extends Component<Props, State> {
       rating: 0,
       reviewComments: "",
       decision: "",
-      isReviewInProgress:undefined
+      isReviewInProgress: undefined
     };
-    this.onDecision=this.onDecision.bind(this);
-    this.isEditable=this.isEditable.bind(this);
+    this.onDecision = this.onDecision.bind(this);
+    this.isEditable = this.isEditable.bind(this);
   }
   ratingChange = (value: number) => {
     this.setState({ rating: value });
@@ -42,11 +47,32 @@ class ReviewRemarks extends Component<Props, State> {
   saveReviewComments = (value: string) => {
     this.setState({ reviewComments: value });
   };
-  onDecision(event:any){
-    event.currentTarget.value
+  onDecision(event: any) {
+    if (this.state.isReviewInProgress) {
+      this.props.throwError({
+        type: "ERROR",
+        message: "Please save your remarks!"
+      });
+    }
+    else if(this.state.rating===0 && event.target.value==="A"){
+      this.props.throwError({
+        type: "ERROR",
+        message: "You liked the Idea? Please Rate it on the scale of 10!"
+      });
+    }
+    else if(this.state.reviewComments==="" && event.target.value==="R"){
+      this.props.throwError({
+        type: "ERROR",
+        message: "Please add the reason of rejection in Remarks section"
+      });
+    }
+    else{
+      //publish to db
+      this.props.history.push("/ideas");
+    }
   }
-  isEditable(el:any){
-    this.setState({isReviewInProgress : el?true:false});
+  isEditable(el: any) {
+    this.setState({ isReviewInProgress: el ? true : false });
   }
   render() {
     return (
@@ -70,7 +96,7 @@ class ReviewRemarks extends Component<Props, State> {
               onSave={this.saveReviewComments}
               editRef={this.isEditable}
             />
-            <DecisionButtons onDecision={this.onDecision}/>
+            <DecisionButtons onDecision={this.onDecision} />
           </Card>
         </main>
       </div>
@@ -78,10 +104,17 @@ class ReviewRemarks extends Component<Props, State> {
   }
 }
 
-function mapStateToProps(state:ReduxState){
-  return{
-    ideaId:state.ideaInReview
-  }
+function mapStateToProps(state: ReduxState) {
+  return {
+    ideaId: state.ideaInReview
+  };
 }
 
-export default ReviewRemarks;
+function mapDispatchToProps(dispatch: Dispatch<Action>) {
+  return bindActionCreators({ throwError }, dispatch);
+}
+
+export default connect(
+  mapStateToProps,
+  mapDispatchToProps
+)(ReviewRemarks);
